@@ -60,6 +60,7 @@ namespace Cars.Controllers
             return Redirect(Url.Action("Details","Cars", new { id=review.CarID}));
         }
 
+        [Authorize(Roles ="Admin")]
         // GET: Reviews/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -80,18 +81,20 @@ namespace Cars.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id")] Review review)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Edit([Bind(Include = "ReviewID,CarID,AuthorID,Text")] Review review)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(review).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id=review.ReviewID});
             }
             return View(review);
         }
 
         // GET: Reviews/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -109,6 +112,7 @@ namespace Cars.Controllers
         // POST: Reviews/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
             Review review = db.Review.Find(id);

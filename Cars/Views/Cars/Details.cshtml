@@ -53,16 +53,19 @@
     </div>
 </div>
 
-<div>
-    @using (Html.BeginForm("Create", "Reviews", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        @Html.Hidden("CarID", Model.CarID)
-        @Html.TextArea("Text", new { @class = "form-control", @placeholder = "Review" })
+@if(User.Identity.IsAuthenticated)
+{
+    <div>
+        @using (Html.BeginForm("Create", "Reviews", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("CarID", Model.CarID)
+            @Html.TextArea("Text", new { @class = "form-control", @placeholder = "Review" })
 
-        <button class="button" type="submit">Send Review</button>
-    }
-</div>
+            <button class="button" type="submit">Send Review</button>
+        }
+    </div>
+}
 
 <div id="reviews">
 

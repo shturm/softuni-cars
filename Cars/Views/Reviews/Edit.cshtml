@@ -16,7 +16,11 @@
         <h4>Review</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.ReviewID)
+        @Html.HiddenFor(model => model.CarID)
+        @Html.HiddenFor(model => model.AuthorID)
+
+        @Html.TextArea("Text",Model.Text)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

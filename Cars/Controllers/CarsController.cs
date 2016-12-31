@@ -39,6 +39,7 @@ namespace Cars.Controllers
             return View(cars);
         }
 
+        [Authorize]
         public ActionResult My(int page = 1, string sort = "created")
         {
             int pageSize = 5;
@@ -294,6 +295,11 @@ namespace Cars.Controllers
             {
                 return HttpNotFound();
             }
+            if (car.OwnerID != User.Identity.GetUserId() && !User.IsInRole("Admin"))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
             return View(car);
         }
 
@@ -304,6 +310,10 @@ namespace Cars.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Car car = db.Cars.Find(id);
+            if (car.OwnerID != User.Identity.GetUserId() && !User.IsInRole("Admin"))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             db.Cars.Remove(car);
             db.SaveChanges();
             return RedirectToAction("Index");

@@ -10,11 +10,13 @@ using Cars.Models;
 
 namespace Cars.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class ManufacturersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Manufacturers
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View(db.Manufacturers.ToList());
@@ -78,7 +80,7 @@ namespace Cars.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name")] Manufacturer manufacturer)
+        public ActionResult Edit([Bind(Include = "ManufacturerID,Name")] Manufacturer manufacturer)
         {
             if (ModelState.IsValid)
             {
