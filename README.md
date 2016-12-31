@@ -6,3 +6,5 @@
 * Close and reopen Visual Studio (for Packange Console to reload cmdlets for migrations)
 * Run `update-database` in Package Manager Console. If it fails remove `Cars` database from SQL Object Explorer and re-run the `update-database`.
 * Star the application
+
+![preview](https://raw.githubusercontent.com/shturm/softuni-cars/master/preview.png)
