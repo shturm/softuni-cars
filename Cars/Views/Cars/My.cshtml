@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Cars.Models.Car>
+
+@{
+    ViewBag.Title = "Cars";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int currentPage = Request.QueryString["page"] == null ? 1 : Int32.Parse(Request.QueryString["page"]);
+    int prevPage = currentPage - 1;
+    int nextPage = currentPage + 1;
+    string currentSort = Request.QueryString["sort"] ?? "created";
+}
+
+<h2>My Cars</h2>
+
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Model)
+        </th>
+        <th>@Html.ActionLink("Total Likes", "My", new { sort = "likes", page=currentPage })</th>
+        <th>@Html.ActionLink("Created","My", new { sort="created", page=currentPage })</th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Model)
+        </td>
+        <td>@item.Likes.Count()</td>
+        <td>@item.Created.ToUniversalTime()</td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.CarID });
+            @Html.ActionLink("Delete", "Delete", new { id = item.CarID });
+            @Html.ActionLink("Details", "Details", new { id = item.CarID });
+        </td>
+    </tr>
+}
+
+</table>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li>
+            <a href="@(Url.Action("My", new { page = prevPage, sort = currentSort }) )" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        @for(int i=currentPage-5;i < currentPage && i > 1; i++)
+        {
+            <li><a href="@(Url.Action("My", new { page = i, sort = currentSort }) )">@(i)</a></li>
+        }
+        <li class="active"><a  href="@(Url.Action("My", new { page = currentPage, sort = currentSort }) )">@(currentPage)</a></li>
+        @for (int i = currentPage+1; i <= currentPage+5; i++)
+        {
+            <li><a href="@(Url.Action("My", new { page = i, sort = currentSort }) )">@(i)</a></li>
+        }
+        <li>
+            <a href="@(Url.Action("My", new { page = nextPage, sort = currentSort }) )" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

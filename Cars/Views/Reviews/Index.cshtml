@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Cars.Models.Review>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>Author</th>
+        <th>Car</th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>@item.Author.UserName</td>
+        <td>@item.CarID @item.Car.Make.Name @item.Car.Model</td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ReviewID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ReviewID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ReviewID })
+        </td>
+    </tr>
+}
+
+</table>

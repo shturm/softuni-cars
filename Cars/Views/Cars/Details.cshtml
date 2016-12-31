@@ -1,0 +1,171 @@
+﻿@model Cars.Models.Car
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Car Details</h2>
+
+<div>
+    <h4>Car</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Model)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Model)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Make)
+        </dt>
+
+        <dd>
+            @Model.Make.Name
+        </dd>
+        <dt>
+           Likes
+        </dt>
+        <dd>
+            @Model.Likes.Count()
+            @if((bool)ViewData["canLike"] == true)
+            {
+                @Html.ActionLink("Like", "Like", new { carId = Model.CarID})
+            }
+            else if (User.Identity.IsAuthenticated)
+            {
+                <p class="text-muted"><i>You already liked this car</i></p>
+            } else
+            {
+                <p class="text-muted"><i>You have to login to like this car</i></p>
+            }
+        </dd>
+
+    </dl>
+</div>
+
+<div class="row">
+    <div class="col-md-4" style="height: 400px">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+</div>
+
+<div>
+    @using (Html.BeginForm("Create", "Reviews", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("CarID", Model.CarID)
+        @Html.TextArea("Text", new { @class = "form-control", @placeholder = "Review" })
+
+        <button class="button" type="submit">Send Review</button>
+    }
+</div>
+
+<div id="reviews">
+
+</div>
+
+
+<p>
+    @if(User.IsInRole("Admin") ||
+        Model.Owner != null &&
+        User.Identity.Name == Model.Owner.UserName)
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.CarID });
+    }
+    &nbsp; @Html.ActionLink("Back to List", "Index")
+</p>
+
+<input type="hidden" id="reviewsPage" value="1" />
+@section scripts {
+    @Scripts.Render("~/Scripts/Chart.bundle.js")
+
+
+<script>
+var ctx = document.getElementById("myChart");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ["Red", "Blue", "Yellow"],
+        labels: [@Html.Raw(ViewData["chartLabels"])],
+        datasets: [{
+            label: 'Likes by month',
+            //data: [12, 19, 3],
+            data: [@ViewData["chartData"]],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+</script>
+
+
+<script>
+    //get default articles
+    $(document).ready(function () {
+        nextReviewsPage();
+    });
+
+    //get next articles automatic
+    $(window).scroll(function () {
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 10) {
+            nextReviewsPage();
+        }
+    });
+    
+    $(window).data("loading", false);
+    $(window).data("allLoaded", false);
+    function nextReviewsPage() {
+        if ($(window).data("loading")) return;
+        if ($(window).data("allLoaded")) return;
+
+        var reviewsPage = ($("#reviewsPage").val() * 1);
+
+        $(window).data("loading", true);
+        $.ajax({
+            type: 'GET',
+            url: '/Cars/Reviews?carId=@Model.CarID&reviewsPage=' + reviewsPage,
+            //dataType: 'json',
+            success: function (data) {
+                if (data.trim() == "") {
+                    $(window).data("allLoaded", true);
+                }
+
+                let page = parseInt($("#reviewsPage").val())+1;
+                $("#reviewsPage").val(page);
+                $("footer", data).remove();
+                $("#reviews").append(data);
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            complete: function () {
+                $(window).data("loading", false);
+            }
+        });
+
+        return false;
+    }
+    </script>
+}

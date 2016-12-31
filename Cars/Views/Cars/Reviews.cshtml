@@ -1,0 +1,18 @@
+﻿@using Cars.Models
+@model IEnumerable<Review>
+
+@{
+    Layout = null;
+}
+
+@foreach (var r in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Author: @r.Author.UserName</h3>
+        </div>
+        <div class="panel-body">
+            @r.Text
+        </div>
+    </div>
+}

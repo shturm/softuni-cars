@@ -1,0 +1,96 @@
+﻿@model Cars.Models.UserDetailsViewModel
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ApplicationUser</h4>
+    <hr />
+    <dl class="dl-horizontal">
+   
+        <dt>
+            @Html.DisplayNameFor(model => model.Register.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Register.Email)
+        </dd>
+
+        @using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <form class="form-horizontal">
+                <h4>Change password</h4>
+                @Html.ValidationSummary(true)
+                <hr />
+
+                @Html.HiddenFor(model => model.Register.Email)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Register.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Register.Password, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Register.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Register.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Register.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Register.ConfirmPassword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Change Password" class="btn btn-default" />
+                    </div>
+                </div>
+            </form>
+
+        }
+
+
+        @using (Html.BeginForm("UpdateRoles", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <form class="form-horizontal">
+                <h4>Roles</h4>
+                <hr />
+                @Html.Hidden("UserID", Model.User.Id)
+                @{ 
+                    bool isAdmin = Model.RoleOwnership != null;
+                    string issuer = "";
+                    if (isAdmin)
+                    {
+                        issuer = Model.RoleOwnership.Admin.UserName;
+                    }
+                }
+                @if(isAdmin)
+                {
+                    <p class="text-muted">Last set by: <i>@issuer</i></p>
+                }
+                <label>
+                    Admin
+                    @Html.CheckBox("Admin", isAdmin)
+                </label>
+                
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Update Roles" class="btn btn-default" />
+                    </div>
+                </div>
+            </form>
+
+        }
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
